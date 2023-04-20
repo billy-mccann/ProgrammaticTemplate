@@ -1,21 +1,21 @@
 import UIKit
+import RxSwift
+import RxCocoa
 
-protocol RootViewControllable {
-  var topLabel: UILabel { get }
-  var listenButton: UIButton { get }
-}
-
-class RootViewController: UIViewController, RootViewControllable {
-  
-  // MARK:  - RootViewControllable
-  let listenButton = UIButton()
-  let topLabel = UILabel()
+class RootViewController: UIViewController {
   
   // MARK: - Private
-  private var viewModel: RootViewModel?
+  // UI
+  private let listenButton = UIButton()
+  private let topLabel = UILabel()
   private let topSixthOfSafeSpace = UILayoutGuide()
   private let middleQuarterOfSafeSpace = UILayoutGuide()
+  
+  // Binding Requirements
+  private var viewModel: RootViewModeling = RootViewModel()
+  let disposeBag = DisposeBag()
 
+  // MARK: - Overrides
   override func viewDidLoad() {
     super.viewDidLoad()
     self.setupGuides()
@@ -24,24 +24,39 @@ class RootViewController: UIViewController, RootViewControllable {
     addTopLabel()
     addListenButton()
     
-    viewModel = RootViewModel(viewController: self)
-    viewModel?.bind()
-    viewModel?.listenForUpdates()
+    bindViewModel(viewModel: viewModel)
+    addListenButton()
   }
   
   private func setupGuides() {
     view.addLayoutGuide(topSixthOfSafeSpace)
     view.addLayoutGuide(middleQuarterOfSafeSpace)
     
-    topSixthOfSafeSpace.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-    topSixthOfSafeSpace.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor, multiplier: 1/6).isActive = true
-    topSixthOfSafeSpace.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
-    topSixthOfSafeSpace.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
-    
-    middleQuarterOfSafeSpace.topAnchor.constraint(equalTo: topSixthOfSafeSpace.bottomAnchor, constant: 10).isActive = true
-    middleQuarterOfSafeSpace.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor, multiplier: 1/4).isActive = true
-    middleQuarterOfSafeSpace.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
-    middleQuarterOfSafeSpace.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
+    topSixthOfSafeSpace.topAnchor
+      .constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
+      .isActive = true
+    topSixthOfSafeSpace.heightAnchor
+      .constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor, multiplier: 1/6)
+      .isActive = true
+    topSixthOfSafeSpace.leadingAnchor
+      .constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor)
+      .isActive = true
+    topSixthOfSafeSpace.trailingAnchor
+      .constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
+      .isActive = true
+  
+    middleQuarterOfSafeSpace.topAnchor
+      .constraint(equalTo: topSixthOfSafeSpace.bottomAnchor, constant: 10)
+      .isActive = true
+    middleQuarterOfSafeSpace.heightAnchor
+      .constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor, multiplier: 1/4)
+      .isActive = true
+    middleQuarterOfSafeSpace.leadingAnchor
+      .constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor)
+      .isActive = true
+    middleQuarterOfSafeSpace.trailingAnchor
+      .constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
+      .isActive = true
   }
   
   // TODO: - add UIView as input param to this func, use for addTopLabel
@@ -72,7 +87,14 @@ class RootViewController: UIViewController, RootViewControllable {
   }
   
   private func addListenButton() {
-    self.viewModel?.listenForUpdates()
+    self.viewModel.listenForUpdates()
+  }
+  
+  // MARK: - ViewModel stuff
+  private func bindViewModel(viewModel: RootViewModeling) {
+    disposeBag.insert(
+      viewModel.labelTextRelay.bind(to: topLabel.rx.text)
+    )
   }
 }
 
