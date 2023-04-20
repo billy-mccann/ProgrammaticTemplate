@@ -1,23 +1,20 @@
-//
-//  RootViewController.swift
-//  ProgrammaticTemplate
-//
-//  Created by Bill McCann on 4/6/23.
-//
-
 import UIKit
 
-class RootViewModel {
-  var viewController: RootViewController?
-  func listenForUpdates(){}
+protocol RootViewControllable {
+  var topLabel: UILabel { get }
+  var listenButton: UIButton { get }
 }
 
-class RootViewController: UIViewController {
+class RootViewController: UIViewController, RootViewControllable {
   
+  // MARK:  - RootViewControllable
+  let listenButton = UIButton()
   let topLabel = UILabel()
-  let viewModel = RootViewModel()
-  let topSixthOfSafeSpace = UILayoutGuide()
-  let middleQuarterOfSafeSpace = UILayoutGuide()
+  
+  // MARK: - Private
+  private var viewModel: RootViewModel?
+  private let topSixthOfSafeSpace = UILayoutGuide()
+  private let middleQuarterOfSafeSpace = UILayoutGuide()
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -25,9 +22,11 @@ class RootViewController: UIViewController {
     addChildViewWith(backgroundColor: .systemCyan, layoutGuide: topSixthOfSafeSpace)
     addChildViewWith(backgroundColor: .systemMint, layoutGuide: middleQuarterOfSafeSpace)
     addTopLabel()
+    addListenButton()
     
-    viewModel.viewController = self
-    viewModel.listenForUpdates()
+    viewModel = RootViewModel(viewController: self)
+    viewModel?.bind()
+    viewModel?.listenForUpdates()
   }
   
   private func setupGuides() {
@@ -45,6 +44,7 @@ class RootViewController: UIViewController {
     middleQuarterOfSafeSpace.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
   }
   
+  // TODO: - add UIView as input param to this func, use for addTopLabel
   private func addChildViewWith(backgroundColor: UIColor, layoutGuide: UILayoutGuide) {
     let childView = UIView()
     childView.translatesAutoresizingMaskIntoConstraints = false
@@ -60,6 +60,19 @@ class RootViewController: UIViewController {
     childView.layer.cornerRadius = 10.0
   }
   
-  private func addTopLabel(){}
+  private func addTopLabel(){
+    topLabel.translatesAutoresizingMaskIntoConstraints = false
+    self.view.addSubview(topLabel)
+    
+    topLabel.topAnchor.constraint(equalTo: topSixthOfSafeSpace.topAnchor).isActive = true
+    topLabel.bottomAnchor.constraint(equalTo: topSixthOfSafeSpace.bottomAnchor).isActive = true
+    topLabel.leadingAnchor.constraint(equalTo: topSixthOfSafeSpace.leadingAnchor).isActive = true
+    topLabel.trailingAnchor.constraint(equalTo: topSixthOfSafeSpace.trailingAnchor).isActive = true
+    topLabel.textAlignment = .center
+  }
+  
+  private func addListenButton() {
+    self.viewModel?.listenForUpdates()
+  }
 }
 
