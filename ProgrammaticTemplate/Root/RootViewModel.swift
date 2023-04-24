@@ -3,12 +3,14 @@ import RxRelay
 
 protocol RootViewModeling {
   
-  var labelTextRelay: BehaviorRelay<String> { get }
+  var labelText: BehaviorRelay<String> { get }
+  var nextVCButtonText: BehaviorRelay<String> { get }
   func listenForUpdates()
 }
 
 class RootViewModel: NSObject, RootViewModeling, URLSessionWebSocketDelegate {
-  let labelTextRelay = BehaviorRelay(value: "Label")
+  let labelText = BehaviorRelay(value: "Label")
+  let nextVCButtonText = BehaviorRelay(value: "Go somewhere")
   
   // MARK: - Websocket stuff
   
@@ -52,7 +54,6 @@ class RootViewModel: NSObject, RootViewModeling, URLSessionWebSocketDelegate {
           })
       }
       DispatchQueue.global().asyncAfter(deadline: .now() + 1 , execute: workItem)
-  
   }
   //MARK: - Send
   
@@ -85,7 +86,7 @@ class RootViewModel: NSObject, RootViewModeling, URLSessionWebSocketDelegate {
     var num = 0
     let timer = Timer(timeInterval: 1.0, repeats: true, block: { [self]_ in
       num += 1
-      labelTextRelay.accept("New Label \(num)")
+      labelText.accept("New Label \(num)")
     })
     RunLoop.main.add(timer, forMode: .common)
   }

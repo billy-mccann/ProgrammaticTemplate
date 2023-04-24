@@ -6,7 +6,7 @@ class RootViewController: UIViewController {
   
   // MARK: - Private
   // UI
-  private let listenButton = UIButton()
+  private let nextVCButton = UIButton()
   private let topLabel = UILabel()
   private let topSixthOfSafeSpace = UILayoutGuide()
   private let middleQuarterOfSafeSpace = UILayoutGuide()
@@ -19,13 +19,12 @@ class RootViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     self.setupGuides()
-    addChildView(childView: UIView(), backgroundColor: .systemMint, layoutGuide: middleQuarterOfSafeSpace)
+    addChildView(childView: nextVCButton, backgroundColor: .systemMint, layoutGuide: middleQuarterOfSafeSpace)
     addChildView(childView: topLabel, backgroundColor: .systemCyan, layoutGuide: topSixthOfSafeSpace)
     topLabel.textAlignment = .center
-    addListenButton()
+    nextVCButton.addTarget(self, action: #selector(showViewController), for: .touchUpInside)
     
     bindViewModel(viewModel: viewModel)
-    addListenButton()
   }
   
   private func setupGuides() {
@@ -73,15 +72,23 @@ class RootViewController: UIViewController {
     childView.layer.cornerRadius = 10.0
   }
   
-  private func addListenButton() {
-    self.viewModel.listenForUpdates()
+  // MARK: - ViewModel stuff
+  
+  @objc private func showViewController(_ sender: UIButton) {
+    
+    if let keyWindow = UIApplication.shared.windows.first(where: { $0.isKeyWindow }), let navigationController = keyWindow.rootViewController as? UINavigationController {
+        // do something
+      let blueVC = BlueViewController()
+      navigationController.show(blueVC, sender: self)
+    }
   }
   
-  // MARK: - ViewModel stuff
   private func bindViewModel(viewModel: RootViewModeling) {
     disposeBag.insert(
-      viewModel.labelTextRelay.bind(to: topLabel.rx.text)
+      viewModel.labelText.bind(to: topLabel.rx.text),
+      viewModel.nextVCButtonText.bind(to: (nextVCButton.rx.title()))
     )
+    viewModel.listenForUpdates()
   }
 }
 
