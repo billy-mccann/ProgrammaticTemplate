@@ -19,9 +19,9 @@ class RootViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     self.setupGuides()
-    addChildViewWith(backgroundColor: .systemCyan, layoutGuide: topSixthOfSafeSpace)
-    addChildViewWith(backgroundColor: .systemMint, layoutGuide: middleQuarterOfSafeSpace)
-    addTopLabel()
+    addChildView(childView: UIView(), backgroundColor: .systemMint, layoutGuide: middleQuarterOfSafeSpace)
+    addChildView(childView: topLabel, backgroundColor: .systemCyan, layoutGuide: topSixthOfSafeSpace)
+    topLabel.textAlignment = .center
     addListenButton()
     
     bindViewModel(viewModel: viewModel)
@@ -59,9 +59,7 @@ class RootViewController: UIViewController {
       .isActive = true
   }
   
-  #warning("Add UIView as input param to this func, use for addTopLabel")
-  private func addChildViewWith(backgroundColor: UIColor, layoutGuide: UILayoutGuide) {
-    let childView = UIView()
+  private func addChildView(childView: UIView, backgroundColor: UIColor, layoutGuide: UILayoutGuide) {
     childView.translatesAutoresizingMaskIntoConstraints = false
     childView.backgroundColor = backgroundColor
     childView.clipsToBounds = true
@@ -73,17 +71,6 @@ class RootViewController: UIViewController {
     childView.trailingAnchor.constraint(equalTo: layoutGuide.trailingAnchor).isActive = true
     
     childView.layer.cornerRadius = 10.0
-  }
-  
-  private func addTopLabel(){
-    topLabel.translatesAutoresizingMaskIntoConstraints = false
-    self.view.addSubview(topLabel)
-    
-    topLabel.topAnchor.constraint(equalTo: topSixthOfSafeSpace.topAnchor).isActive = true
-    topLabel.bottomAnchor.constraint(equalTo: topSixthOfSafeSpace.bottomAnchor).isActive = true
-    topLabel.leadingAnchor.constraint(equalTo: topSixthOfSafeSpace.leadingAnchor).isActive = true
-    topLabel.trailingAnchor.constraint(equalTo: topSixthOfSafeSpace.trailingAnchor).isActive = true
-    topLabel.textAlignment = .center
   }
   
   private func addListenButton() {

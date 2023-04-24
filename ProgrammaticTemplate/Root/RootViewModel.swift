@@ -78,15 +78,15 @@ class RootViewModel: NSObject, RootViewModeling, URLSessionWebSocketDelegate {
   
 // MARK: - RootViewModeling functions
   
-  #warning("Put timer on different runloop level")
   func listenForUpdates(){
     self.createSession()
     self.receive()
     
     var num = 0
-    Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { [self]_ in
+    let timer = Timer(timeInterval: 1.0, repeats: true, block: { [self]_ in
       num += 1
       labelTextRelay.accept("New Label \(num)")
     })
+    RunLoop.main.add(timer, forMode: .common)
   }
 }
